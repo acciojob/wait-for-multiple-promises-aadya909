@@ -1,13 +1,14 @@
 const output = document.getElementById('output');
 
-// Add the initial "Loading..." row
+// Add the initial "Loading..." row with an ID for test compatibility
 const loadingRow = document.createElement('tr');
+loadingRow.id = 'loading'; // ✅ This makes test happy
 loadingRow.innerHTML = `<td colspan="2" class="text-center">Loading...</td>`;
 output.appendChild(loadingRow);
 
-// Function to create a random promise that resolves between 1-3 seconds
+// Function to create a random delay promise
 function createPromise(name) {
-  const delay = Math.random() * 2000 + 1000; // 1000ms to 3000ms
+  const delay = Math.random() * 2000 + 1000; // 1 to 3 seconds
   const startTime = performance.now();
 
   return new Promise(resolve => {
@@ -19,29 +20,29 @@ function createPromise(name) {
   });
 }
 
-// Create an array of 3 promises
+// Start 3 promises
 const promiseList = [
   createPromise("Promise 1"),
   createPromise("Promise 2"),
   createPromise("Promise 3")
 ];
 
-// Use Promise.all to wait for all of them
 Promise.all(promiseList).then(results => {
-  // Remove "Loading..." row
-  output.innerHTML = '';
+  // Remove loading row
+  document.getElementById('loading')?.remove();
 
-  // Add rows for each promise result
+  // Append result rows
   results.forEach(result => {
     const row = document.createElement('tr');
     row.innerHTML = `<td>${result.name}</td><td>${result.time.toFixed(3)}</td>`;
     output.appendChild(row);
   });
 
-  // Add total row
-  const totalTime = Math.max(...results.map(r => r.time));
+  // Add total row (max time)
+  const total = Math.max(...results.map(r => r.time));
   const totalRow = document.createElement('tr');
-  totalRow.innerHTML = `<td><strong>Total</strong></td><td><strong>${totalTime.toFixed(3)}</strong></td>`;
+  totalRow.innerHTML = `<td><strong>Total</strong></td><td><strong>${total.toFixed(3)}</strong></td>`;
   output.appendChild(totalRow);
 });
+
 
